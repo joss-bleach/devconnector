@@ -24,4 +24,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       secretOrKey: 'secret',
     });
   }
+
+  validate = async (payload: JwtPayload): Promise<JwtDecoded> => {
+    return { id: payload.sub, email: payload.user };
+  };
 }
