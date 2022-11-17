@@ -6,7 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User, UserDocument } from './user.schema';
+import { UserDocument } from './user.schema';
 import * as bcrypt from 'bcrypt';
 import { UserDetails } from './user-details.interface';
 
@@ -26,20 +26,16 @@ export class UserService {
   };
 
   // Find a user by their email address
-  findUserByEmail = async (
-    email: string,
-  ): Promise<UserDetails | NotFoundException> => {
+  findUserByEmail = async (email: string): Promise<UserDocument> => {
     let user = await this.userModel.findOne({ email }).exec();
     if (!user) {
       throw new NotFoundException('No user found with this email address');
     }
-    return this._getUserDetails(user);
+    return user;
   };
 
   // Find a user by their ID
-  findUserById = async (
-    id: string,
-  ): Promise<UserDetails | NotFoundException> => {
+  findUserById = async (id: string): Promise<UserDetails> => {
     let user = await this.userModel.findById(id);
     if (!user) {
       throw new NotFoundException('No user found with this ID');
@@ -48,9 +44,7 @@ export class UserService {
   };
 
   // Create a new user
-  createUser = async (
-    data: CreateUserDto,
-  ): Promise<UserDocument | InternalServerErrorException> => {
+  createUser = async (data: CreateUserDto): Promise<UserDocument> => {
     let profileImage = `https://avatars.dicebear.com/api/pixel-art/${data.name.replace(
       /\s/g,
       '',
