@@ -9,6 +9,12 @@ export class Education {
   qualification: string;
 
   @Prop({ required: true })
+  location: string;
+
+  @Prop({ required: true })
+  about: string;
+
+  @Prop({ required: true })
   from: Date;
 
   @Prop()

@@ -9,11 +9,14 @@ export class Work {
   jobRole: string;
 
   @Prop({ required: true })
+  location: string;
+
+  @Prop({ required: true })
+  description: string;
+
+  @Prop({ required: true })
   from: Date;
 
   @Prop()
   to: Date | null;
-
-  @Prop({ required: true })
-  description: string;
 }
