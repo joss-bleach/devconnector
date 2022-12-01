@@ -7,7 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { async } from 'rxjs';
 import { CreateProfileDto } from './dtos/create-profile.dto';
-import { EducationData, WorkData } from './profile.interface';
+import { DisplayProfile, EducationData, WorkData } from './profile.interface';
 import { Profile, ProfileDocument } from './schemas/profile.schema';
 
 @Injectable()
@@ -17,13 +17,15 @@ export class ProfileService {
     private readonly profileModel: Model<ProfileDocument>,
   ) {}
 
-  findProfileById = async (id: string) => {
+  findProfileById = async (id: string): Promise<DisplayProfile | null> => {
     return await (
       await this.profileModel.findById(id)
     ).populate('user', ['name', 'email', 'profileImage']);
   };
 
-  findProfileByUserId = async (userId: string) => {
+  findProfileByUserId = async (
+    userId: string,
+  ): Promise<DisplayProfile | null> => {
     return await this.profileModel
       .findOne({ user: new Types.ObjectId(userId) })
       .populate('user', ['name', 'email', 'profileImage']);
@@ -32,7 +34,7 @@ export class ProfileService {
   createProfile = async (
     userId: string,
     createProfileDto: CreateProfileDto,
-  ) => {
+  ): Promise<DisplayProfile | null> => {
     const profileAlreadyExists = await this.findProfileByUserId(userId);
     if (profileAlreadyExists) {
       throw new ConflictException('A profile already exists for this user.');
@@ -46,7 +48,7 @@ export class ProfileService {
   addWorkOrEducation = async (
     userId: string,
     data: EducationData | WorkData,
-  ) => {
+  ): Promise<DisplayProfile | null> => {
     const { type, body } = data;
     const updateEducationAndWork = await this.profileModel.findOneAndUpdate(
       { user: userId },
