@@ -31,6 +31,7 @@ export class ProfileController {
     return await this.profileService.createProfile(user.id, body);
   }
 
+  // Update a user profile
   @UseGuards(JwtGuard)
   @Patch()
   async updateProfile(
@@ -53,6 +54,13 @@ export class ProfileController {
       );
     }
     return currentUserProfile;
+  }
+
+  // Return all user profiles
+  @UseGuards(JwtGuard)
+  @Get('/all')
+  async getAllProfiles() {
+    return this.profileService.findAllProfiles();
   }
 
   // Add work experience to user profile

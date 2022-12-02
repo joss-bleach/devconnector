@@ -28,6 +28,10 @@ export class ProfileService {
       .populate('user', ['name', 'email', 'profileImage']);
   };
 
+  findAllProfiles = async (): Promise<DisplayProfile[] | null> => {
+    return await this.profileModel.find();
+  };
+
   createProfile = async (
     userId: string,
     createProfileDto: CreateProfileDto,
