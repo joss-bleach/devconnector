@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { async } from 'rxjs';
 import { CreateProfileDto } from './dtos/create-profile.dto';
 import { DisplayProfile, EducationData, WorkData } from './profile.interface';
 import { Profile, ProfileDocument } from './schemas/profile.schema';
@@ -60,6 +59,26 @@ export class ProfileService {
         'No profile found to add education or work experience to.',
       );
     }
-    return await updateEducationAndWork;
+    return updateEducationAndWork;
+  };
+
+  removeWorkOrEducation = async (
+    userId: string,
+    data: EducationData | WorkData,
+  ): Promise<DisplayProfile | null> => {
+    const { type, id } = data;
+    if (!id) {
+      throw new NotFoundException(
+        'No profile found to remove education or work experience from.',
+      );
+    }
+
+    const deleteEducationAndWork = await this.profileModel.findOneAndUpdate(
+      { user: userId },
+      { $pull: { [`${type}`]: { _id: id } } },
+      { new: true },
+    );
+
+    return deleteEducationAndWork;
   };
 }

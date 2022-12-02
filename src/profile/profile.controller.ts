@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
+  Param,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -18,6 +20,7 @@ import { ProfileService } from './profile.service';
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
+  // Create a new user profile
   @UseGuards(JwtGuard)
   @Post()
   async createNewProfile(
@@ -27,6 +30,7 @@ export class ProfileController {
     return await this.profileService.createProfile(user.id, body);
   }
 
+  // Get current user profile
   @UseGuards(JwtGuard)
   @Get('/me')
   async getMyProfile(@GetCurrentUser() user: JwtDecoded) {
@@ -41,6 +45,7 @@ export class ProfileController {
     return currentUserProfile;
   }
 
+  // Add work experience to user profile
   @UseGuards(JwtGuard)
   @Post('/work')
   async addWorkExperience(
@@ -53,6 +58,20 @@ export class ProfileController {
     });
   }
 
+  // Delete work experience from user profile
+  @UseGuards(JwtGuard)
+  @Delete('/work/:workId')
+  async removeWork(
+    @GetCurrentUser() user: JwtDecoded,
+    @Param('workId') workId: string,
+  ) {
+    return await this.profileService.removeWorkOrEducation(user.id, {
+      type: 'work',
+      id: workId,
+    });
+  }
+
+  // Add education experience to user profile
   @UseGuards(JwtGuard)
   @Post('/education')
   async addEducationExperience(
@@ -62,6 +81,19 @@ export class ProfileController {
     return await this.profileService.addWorkOrEducation(user.id, {
       type: 'education',
       body,
+    });
+  }
+
+  // Delete education experience from user profile
+  @UseGuards(JwtGuard)
+  @Delete('/education/:educationId')
+  async removeEducation(
+    @GetCurrentUser() user: JwtDecoded,
+    @Param('educationId') educationId: string,
+  ) {
+    return await this.profileService.removeWorkOrEducation(user.id, {
+      type: 'education',
+      id: educationId,
     });
   }
 }
