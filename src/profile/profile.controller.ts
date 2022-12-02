@@ -5,6 +5,7 @@ import {
   Get,
   NotFoundException,
   Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -28,6 +29,15 @@ export class ProfileController {
     @GetCurrentUser() user: JwtDecoded,
   ) {
     return await this.profileService.createProfile(user.id, body);
+  }
+
+  @UseGuards(JwtGuard)
+  @Patch()
+  async updateProfile(
+    @Body() body: Partial<CreateProfileDto>,
+    @GetCurrentUser() user: JwtDecoded,
+  ) {
+    return await this.profileService.updateProfileByUserId(user.id, body);
   }
 
   // Get current user profile
@@ -71,6 +81,21 @@ export class ProfileController {
     });
   }
 
+  // Update work experience instance on a user profile
+  @UseGuards(JwtGuard)
+  @Patch('/work/:workId')
+  async updateWorkExperience(
+    @Body() body: Partial<CreateWorkDto>,
+    @GetCurrentUser() user: JwtDecoded,
+    @Param('workId') workId: string,
+  ) {
+    return await this.profileService.updateWorkOrEducation(user.id, {
+      type: 'work',
+      id: workId,
+      body,
+    });
+  }
+
   // Add education experience to user profile
   @UseGuards(JwtGuard)
   @Post('/education')
@@ -95,5 +120,27 @@ export class ProfileController {
       type: 'education',
       id: educationId,
     });
+  }
+
+  // Update education experience instance on a user profile
+  @UseGuards(JwtGuard)
+  @Patch('/education/:educationId')
+  async updateEducationExperience(
+    @Body() body: Partial<CreateEducationDto>,
+    @GetCurrentUser() user: JwtDecoded,
+    @Param('educationId') educationId: string,
+  ) {
+    return await this.profileService.updateWorkOrEducation(user.id, {
+      type: 'education',
+      id: educationId,
+      body,
+    });
+  }
+
+  // Toggle looking for work
+  @UseGuards(JwtGuard)
+  @Patch('/lookingforwork')
+  async toggleLookingForWork(@GetCurrentUser() user: JwtDecoded) {
+    return await this.profileService.changeLookingForWork(user.id);
   }
 }

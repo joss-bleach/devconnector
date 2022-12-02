@@ -7,13 +7,13 @@ import { Work } from './schemas/work.schema';
 
 export interface WorkData {
   type: 'work';
-  body?: CreateWorkDto;
+  body?: CreateWorkDto | Partial<CreateWorkDto>;
   id?: string;
 }
 
 export interface EducationData {
   type: 'education';
-  body?: CreateEducationDto;
+  body?: CreateEducationDto | Partial<CreateEducationDto>;
   id?: string;
 }
 

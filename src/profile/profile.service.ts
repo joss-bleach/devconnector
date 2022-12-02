@@ -22,9 +22,7 @@ export class ProfileService {
     ).populate('user', ['name', 'email', 'profileImage']);
   };
 
-  findProfileByUserId = async (
-    userId: string,
-  ): Promise<DisplayProfile | null> => {
+  findProfileByUserId = async (userId: string) => {
     return await this.profileModel
       .findOne({ user: new Types.ObjectId(userId) })
       .populate('user', ['name', 'email', 'profileImage']);
@@ -42,6 +40,18 @@ export class ProfileService {
     const newProfileData = { ...createProfileDto, user: userId };
     const newProfile = await this.profileModel.create(newProfileData);
     return await newProfile.save();
+  };
+
+  updateProfileByUserId = async (
+    userId: string,
+    attributes: Partial<ProfileDocument>,
+  ): Promise<DisplayProfile | null> => {
+    const profile = await this.findProfileByUserId(userId);
+    if (!profile) {
+      throw new NotFoundException('No profile found for this user.');
+    }
+    Object.assign(profile, attributes);
+    return await profile.save();
   };
 
   addWorkOrEducation = async (
@@ -69,7 +79,7 @@ export class ProfileService {
     const { type, id } = data;
     if (!id) {
       throw new NotFoundException(
-        'No profile found to remove education or work experience from.',
+        'No id found to remove education or work experience from.',
       );
     }
 
@@ -80,5 +90,44 @@ export class ProfileService {
     );
 
     return deleteEducationAndWork;
+  };
+
+  updateWorkOrEducation = async (
+    userId: string,
+    data: EducationData | WorkData,
+  ): Promise<DisplayProfile | null> => {
+    const { type, id, body } = data;
+    if (!id || !body) {
+      throw new NotFoundException(
+        'No id found to remove education or work experience from.',
+      );
+    }
+
+    let updatedItems = {};
+
+    for (let field in body) {
+      updatedItems[`${type}.$.${field}`] = body[field];
+    }
+
+    const updateEducationAndWork = await this.profileModel.findOneAndUpdate(
+      {
+        user: userId,
+        [`${type}._id`]: id,
+      },
+      { $set: updatedItems },
+      { new: true, upsert: true },
+    );
+    return updateEducationAndWork;
+  };
+
+  changeLookingForWork = async (
+    userId: string,
+  ): Promise<DisplayProfile | null> => {
+    let userProfile = await this.findProfileByUserId(userId);
+    if (!userProfile) {
+      throw new NotFoundException('No profile found for this user.');
+    }
+    userProfile.lookingForWork = !userProfile.lookingForWork;
+    return await userProfile.save();
   };
 }

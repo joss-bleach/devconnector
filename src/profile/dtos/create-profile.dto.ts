@@ -1,17 +1,9 @@
-import {
-  IsBoolean,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUrl,
-} from 'class-validator';
+import { IsBoolean, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class CreateProfileDto {
-  @IsNotEmpty()
   @IsString()
   company: string;
 
-  @IsNotEmpty()
   @IsString()
   jobRole: string;
 
@@ -26,11 +18,9 @@ export class CreateProfileDto {
   @IsString()
   location: string;
 
-  @IsNotEmpty()
   @IsString()
   about: string;
 
-  @IsNotEmpty()
   skills: string[];
 
   @IsOptional()
