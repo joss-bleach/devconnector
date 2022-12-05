@@ -34,8 +34,11 @@ export class PostController {
   @UseGuards(JwtGuard)
   @HttpCode(204)
   @Delete('/:postId')
-  async deletePost(@Param('postId') postId: string) {
-    return await this.postService.deletePost(postId);
+  async deletePost(
+    @Param('postId') postId: string,
+    @GetCurrentUser() user: JwtDecoded,
+  ) {
+    return await this.postService.deletePost(postId, user.id);
   }
 
   // Get a post by ID

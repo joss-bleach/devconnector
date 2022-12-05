@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { userHasPermission } from 'src/utils/userHasPermission';
 import { CreateCommentDto } from './dtos/create-comment.dto';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { Post, PostDocument } from './schemas/post.schema';
@@ -62,8 +63,9 @@ export class PostService {
     return await newPost.save();
   };
 
-  deletePost = async (postId: string): Promise<void> => {
+  deletePost = async (postId: string, userId: string): Promise<void> => {
     const deletePost = await this.postModel.findByIdAndDelete(postId);
+    userHasPermission(userId, deletePost.user);
     if (!deletePost) {
       throw new InternalServerErrorException('Something went wrong.');
     }
