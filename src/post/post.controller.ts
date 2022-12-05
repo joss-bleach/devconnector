@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
@@ -46,5 +47,26 @@ export class PostController {
   @Get('/user/:userId')
   async getAllUserPosts(@Param('userId') userId: string) {
     return await this.postService.getAllUserPosts(userId);
+  }
+
+  // Like a post
+  @UseGuards(JwtGuard)
+  @Put('/like/:postId')
+  async likePost(
+    @Param('postId') postId: string,
+    @GetCurrentUser() user: JwtDecoded,
+  ) {
+    return await this.postService.likePost(postId, user.id);
+  }
+
+  // Unlike a post
+  // Like a post
+  @UseGuards(JwtGuard)
+  @Put('/unlike/:postId')
+  async unlikePost(
+    @Param('postId') postId: string,
+    @GetCurrentUser() user: JwtDecoded,
+  ) {
+    return await this.postService.unlikePost(postId, user.id);
   }
 }
