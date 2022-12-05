@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Post,
   Put,
@@ -30,6 +31,7 @@ export class PostController {
 
   // Delete a post
   @UseGuards(JwtGuard)
+  @HttpCode(204)
   @Delete('/:postId')
   async deletePost(@Param('postId') postId: string) {
     return await this.postService.deletePost(postId);
@@ -49,6 +51,13 @@ export class PostController {
     return await this.postService.getAllUserPosts(userId);
   }
 
+  // Get all posts
+  @UseGuards(JwtGuard)
+  @Get()
+  async findAllPosts() {
+    return await this.postService.getAllPosts();
+  }
+
   // Like a post
   @UseGuards(JwtGuard)
   @Put('/like/:postId')
@@ -60,7 +69,6 @@ export class PostController {
   }
 
   // Unlike a post
-  // Like a post
   @UseGuards(JwtGuard)
   @Put('/unlike/:postId')
   async unlikePost(
@@ -69,4 +77,8 @@ export class PostController {
   ) {
     return await this.postService.unlikePost(postId, user.id);
   }
+
+  // Add a comment to a post
+
+  // Remove a comment from a post
 }

@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -37,6 +38,17 @@ export class PostService {
     return posts;
   };
 
+  getAllPosts = async () => {
+    const posts = await this.postModel
+      .find()
+      .populate('user', ['name', 'email', 'profileImage'])
+      .populate('likes.user', ['name', 'email', 'profileImage']);
+    if (posts.length === 0) {
+      throw new NotFoundException('No posts found.');
+    }
+    return posts;
+  };
+
   createPost = async (userId: string, createPostDto: CreatePostDto) => {
     const postData = { ...createPostDto, user: userId };
     const newPost = await this.postModel.create(postData);
@@ -44,7 +56,11 @@ export class PostService {
   };
 
   deletePost = async (postId: string) => {
-    return await this.postModel.findByIdAndDelete(postId);
+    const deletePost = await this.postModel.findByIdAndDelete(postId);
+    if (!deletePost) {
+      throw new InternalServerErrorException('Something went wrong.');
+    }
+    return;
   };
 
   likePost = async (postId: string, userId: string) => {
