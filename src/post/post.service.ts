@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { CreateCommentDto } from './dtos/create-comment.dto';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { Post, PostDocument } from './schemas/post.schema';
 
@@ -20,7 +21,8 @@ export class PostService {
     const post = await this.postModel
       .findById(id)
       .populate('user', ['name', 'email', 'profileImage'])
-      .populate('likes.user', ['name', 'email', 'profileImage']);
+      .populate('likes.user', ['name', 'email', 'profileImage'])
+      .populate('comments.user', ['name', 'email', 'profileImage']);
     if (!post) {
       throw new NotFoundException('No post found with this ID.');
     }
@@ -31,7 +33,8 @@ export class PostService {
     const posts = await this.postModel
       .find({ user: userId })
       .populate('user', ['name', 'email', 'profileImage'])
-      .populate('likes.user', ['name', 'email', 'profileImage']);
+      .populate('likes.user', ['name', 'email', 'profileImage'])
+      .populate('comments.user', ['name', 'email', 'profileImage']);
     if (posts.length === 0) {
       throw new NotFoundException("This user hasn't posted.");
     }
@@ -42,7 +45,8 @@ export class PostService {
     const posts = await this.postModel
       .find()
       .populate('user', ['name', 'email', 'profileImage'])
-      .populate('likes.user', ['name', 'email', 'profileImage']);
+      .populate('likes.user', ['name', 'email', 'profileImage'])
+      .populate('comments.user', ['name', 'email', 'profileImage']);
     if (posts.length === 0) {
       throw new NotFoundException('No posts found.');
     }
@@ -84,5 +88,39 @@ export class PostService {
 
     post.likes = post.likes.filter(({ user }) => user.toString() !== userId);
     return await post.save();
+  };
+
+  createCommentOnPost = async (
+    postId: string,
+    userId: string,
+    createCommentDto: CreateCommentDto,
+  ) => {
+    let newComment = {
+      user: userId,
+      content: createCommentDto.content,
+    };
+    const createComment = await this.postModel.findOneAndUpdate(
+      { _id: postId },
+      { $push: { ['comments']: newComment } },
+      { new: true },
+    );
+    if (!createComment) {
+      throw new NotFoundException('Could not find post to add comment to.');
+    }
+    return createComment;
+  };
+
+  removeCommentFromPost = async (postId: string, commentId: string) => {
+    const removeComment = await this.postModel.findOneAndUpdate(
+      { _id: postId },
+      { $pull: { ['comments']: { _id: commentId } } },
+      { new: true },
+    );
+    if (!removeComment) {
+      throw new NotFoundException(
+        'Could not find post or comment ID to remove comment from post.',
+      );
+    }
+    return removeComment;
   };
 }

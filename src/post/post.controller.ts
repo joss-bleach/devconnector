@@ -12,6 +12,7 @@ import {
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { JwtDecoded } from 'src/auth/strategy/jwt.strategy';
 import { GetCurrentUser } from 'src/user/decorators/current-user.decorator';
+import { CreateCommentDto } from './dtos/create-comment.dto';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { PostService } from './post.service';
 
@@ -79,6 +80,23 @@ export class PostController {
   }
 
   // Add a comment to a post
+  @UseGuards(JwtGuard)
+  @Post('/comment/:postId')
+  async addComment(
+    @Param('postId') postId: string,
+    @GetCurrentUser() user: JwtDecoded,
+    @Body() body: CreateCommentDto,
+  ) {
+    return this.postService.createCommentOnPost(postId, user.id, body);
+  }
 
   // Remove a comment from a post
+  @UseGuards(JwtGuard)
+  @Delete('/:postId/comment/:commentId')
+  async removeComment(
+    @Param('postId') postId: string,
+    @Param('commentId') commentId: string,
+  ) {
+    return this.postService.removeCommentFromPost(postId, commentId);
+  }
 }
