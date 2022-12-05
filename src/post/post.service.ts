@@ -17,7 +17,7 @@ export class PostService {
     private readonly postModel: Model<PostDocument>,
   ) {}
 
-  findPostById = async (id: string) => {
+  findPostById = async (id: string): Promise<PostDocument | null> => {
     const post = await this.postModel
       .findById(id)
       .populate('user', ['name', 'email', 'profileImage'])
@@ -29,7 +29,7 @@ export class PostService {
     return post;
   };
 
-  getAllUserPosts = async (userId: string) => {
+  getAllUserPosts = async (userId: string): Promise<PostDocument[] | null> => {
     const posts = await this.postModel
       .find({ user: userId })
       .populate('user', ['name', 'email', 'profileImage'])
@@ -41,7 +41,7 @@ export class PostService {
     return posts;
   };
 
-  getAllPosts = async () => {
+  getAllPosts = async (): Promise<PostDocument[] | null> => {
     const posts = await this.postModel
       .find()
       .populate('user', ['name', 'email', 'profileImage'])
@@ -53,13 +53,16 @@ export class PostService {
     return posts;
   };
 
-  createPost = async (userId: string, createPostDto: CreatePostDto) => {
+  createPost = async (
+    userId: string,
+    createPostDto: CreatePostDto,
+  ): Promise<PostDocument | null> => {
     const postData = { ...createPostDto, user: userId };
     const newPost = await this.postModel.create(postData);
     return await newPost.save();
   };
 
-  deletePost = async (postId: string) => {
+  deletePost = async (postId: string): Promise<void> => {
     const deletePost = await this.postModel.findByIdAndDelete(postId);
     if (!deletePost) {
       throw new InternalServerErrorException('Something went wrong.');
@@ -67,7 +70,10 @@ export class PostService {
     return;
   };
 
-  likePost = async (postId: string, userId: string) => {
+  likePost = async (
+    postId: string,
+    userId: string,
+  ): Promise<PostDocument | null> => {
     const post = await this.findPostById(postId);
     if (post.likes.some((like) => like.user.toString() === userId)) {
       throw new BadRequestException('User has already liked this post.');
@@ -77,7 +83,10 @@ export class PostService {
     return await post.save();
   };
 
-  unlikePost = async (postId: string, userId: string) => {
+  unlikePost = async (
+    postId: string,
+    userId: string,
+  ): Promise<PostDocument | null> => {
     const post = await this.postModel.findById(postId);
     if (!post) {
       throw new NotFoundException('No post found with this ID.');
@@ -94,7 +103,7 @@ export class PostService {
     postId: string,
     userId: string,
     createCommentDto: CreateCommentDto,
-  ) => {
+  ): Promise<PostDocument | null> => {
     let newComment = {
       user: userId,
       content: createCommentDto.content,
@@ -110,7 +119,10 @@ export class PostService {
     return createComment;
   };
 
-  removeCommentFromPost = async (postId: string, commentId: string) => {
+  removeCommentFromPost = async (
+    postId: string,
+    commentId: string,
+  ): Promise<PostDocument | null> => {
     const removeComment = await this.postModel.findOneAndUpdate(
       { _id: postId },
       { $pull: { ['comments']: { _id: commentId } } },
