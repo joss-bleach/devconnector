@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AuthenticationFormData } from './Auth.types';
@@ -8,6 +9,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import styles from './Auth.styles';
 
 const Auth: React.FC = () => {
+  const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const {
     register,
     handleSubmit,
@@ -21,6 +23,11 @@ const Auth: React.FC = () => {
     console.log(JSON.stringify(data, null, 2));
     reset();
   };
+
+  const handleToggleVisible = () => {
+    setPasswordVisible((current) => !current);
+  };
+
   return (
     <div>
       <div className="mx-auto max-w-prose">
@@ -55,12 +62,29 @@ const Auth: React.FC = () => {
               </label>
               <span className={styles['label-legend']}>Required</span>
             </div>
-            <input
-              type="password"
-              id="password"
-              {...register('password')}
-              className={styles['input-valid']}
-            />
+            <span className="relative w-full">
+              {!passwordVisible ? (
+                <FaEye
+                  role="button"
+                  aria-label="Show password"
+                  className={styles['visibility-icon']}
+                  onClick={handleToggleVisible}
+                />
+              ) : (
+                <FaEyeSlash
+                  role="button"
+                  aria-label="Show password"
+                  className={styles['visibility-icon']}
+                  onClick={handleToggleVisible}
+                />
+              )}
+              <input
+                type={passwordVisible ? 'text' : 'password'}
+                id="password"
+                {...register('password')}
+                className={styles['input-valid']}
+              />
+            </span>
             <span className={styles['input-error']}>
               {errors.password?.message}
             </span>

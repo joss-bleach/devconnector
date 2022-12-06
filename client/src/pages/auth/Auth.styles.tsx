@@ -8,10 +8,12 @@ const AuthStyles = {
   label: 'text-theme-headline text-xs font-semibold',
   'label-legend': 'text-theme-paragraph text-xs',
   'input-valid':
-    'bg-theme-background text-theme-paragraph ring-theme-button h-9 rounded p-2 text-sm focus:outline-none focus:ring-2',
+    'bg-theme-background w-full text-theme-paragraph ring-theme-button h-9 rounded p-2 text-sm focus:outline-none focus:ring-2',
   submit:
     'bg-theme-button text-theme-button-text hover:bg-theme-button-hover h-9 w-80 rounded text-sm transition disabled:cursor-not-allowed disabled:opacity-30',
   'input-error': 'text-theme-tertiary text-xs font-semibold',
+  'visibility-icon':
+    'text-theme-paragraph absolute inset-y-0 right-0 top-2 flex cursor-pointer items-center pr-2 text-xl',
 };
 
 export default AuthStyles;

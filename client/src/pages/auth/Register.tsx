@@ -1,12 +1,18 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { RegistrationFormData } from './Auth.types';
 import { registrationValidationSchema } from './Auth.validation';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 // Styles
 import styles from './Auth.styles';
 
 const Register: React.FC = () => {
+  const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] =
+    useState<boolean>(false);
+
   const {
     register,
     handleSubmit,
@@ -19,6 +25,14 @@ const Register: React.FC = () => {
   const handleOnSubmit = (data: RegistrationFormData) => {
     console.log(JSON.stringify(data, null, 2));
     reset();
+  };
+
+  const handleTogglePasswordVisible = () => {
+    setPasswordVisible((current) => !current);
+  };
+
+  const handleToggleConfirmPasswordVisible = () => {
+    setConfirmPasswordVisible((current) => !current);
   };
 
   return (
@@ -65,31 +79,65 @@ const Register: React.FC = () => {
             </label>
             <span className={styles['label-legend']}>Required</span>
           </div>
-          <input
-            type="password"
-            id="password"
-            {...register('password')}
-            className={styles['input-valid']}
-          />
+          <span className="relative w-full">
+            {!passwordVisible ? (
+              <FaEye
+                role="button"
+                aria-label="Show password"
+                className={styles['visibility-icon']}
+                onClick={handleTogglePasswordVisible}
+              />
+            ) : (
+              <FaEyeSlash
+                role="button"
+                aria-label="Show password"
+                className={styles['visibility-icon']}
+                onClick={handleTogglePasswordVisible}
+              />
+            )}
+            <input
+              type={passwordVisible ? 'text' : 'password'}
+              id="password"
+              {...register('password')}
+              className={styles['input-valid']}
+            />
+          </span>
           <span className={styles['input-error']}>
             {errors.password?.message}
           </span>
         </fieldset>
         <fieldset className={styles.fieldset}>
           <div className={styles['label-wrapper']}>
-            <label className={styles.label} htmlFor="confirmPassword">
+            <label className={styles.label} htmlFor="password">
               Confirm password
             </label>
             <span className={styles['label-legend']}>Required</span>
           </div>
-          <input
-            type="password"
-            id="confirmPassword"
-            {...register('confirmPassword')}
-            className={styles['input-valid']}
-          />
+          <span className="relative w-full">
+            {!confirmPasswordVisible ? (
+              <FaEye
+                role="button"
+                aria-label="Show password"
+                className={styles['visibility-icon']}
+                onClick={handleToggleConfirmPasswordVisible}
+              />
+            ) : (
+              <FaEyeSlash
+                role="button"
+                aria-label="Show password"
+                className={styles['visibility-icon']}
+                onClick={handleToggleConfirmPasswordVisible}
+              />
+            )}
+            <input
+              type={confirmPasswordVisible ? 'text' : 'password'}
+              id="password"
+              {...register('confirmPassword')}
+              className={styles['input-valid']}
+            />
+          </span>
           <span className={styles['input-error']}>
-            {errors.confirmPassword?.message}
+            {errors.password?.message}
           </span>
         </fieldset>
         <button
