@@ -1,5 +1,5 @@
-import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
 // Pages
 import AuthPage from './pages/auth/Auth.page';
@@ -11,6 +11,18 @@ import Auth from './components/auth/Auth';
 function App() {
   return (
     <>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Routes>
         <Route path="auth" element={<AuthPage />}>
           <Route path="login" element={<Auth />} />

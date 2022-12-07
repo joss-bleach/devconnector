@@ -1,9 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { RegistrationFormData } from './Auth.types';
 import { registrationValidationSchema } from './Auth.validation';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { toast } from 'react-toastify';
+
+// Redux
+import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
+import { RegisterUser } from '../../state/features/auth/models';
+import {
+  registerUser,
+  resetAsyncState,
+} from '../../state/features/auth/authSlice';
 
 // Styles
 import styles from './Auth.styles';
@@ -11,9 +21,22 @@ import { Link } from 'react-router-dom';
 import SEO from '../seo/SEO';
 
 const Register: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const { isSuccess } = useAppSelector((state) => state.auth);
+  const navigate = useNavigate();
+
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] =
     useState<boolean>(false);
+
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(resetAsyncState());
+      reset();
+      navigate('/auth/login');
+      toast.success('Account created!');
+    }
+  }, [isSuccess, dispatch]);
 
   const {
     register,
@@ -25,8 +48,12 @@ const Register: React.FC = () => {
   });
 
   const handleOnSubmit = (data: RegistrationFormData) => {
-    console.log(JSON.stringify(data, null, 2));
-    reset();
+    const newUser: RegisterUser = {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    };
+    dispatch(registerUser(newUser));
   };
 
   const handleTogglePasswordVisible = () => {
