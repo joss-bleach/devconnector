@@ -7,6 +7,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 // Styles
 import styles from './Auth.styles';
+import { Link } from 'react-router-dom';
 
 const Register: React.FC = () => {
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
@@ -17,7 +18,7 @@ const Register: React.FC = () => {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<RegistrationFormData>({
     resolver: yupResolver(registrationValidationSchema),
   });
@@ -36,12 +37,16 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto max-w-prose">
+    <div className={styles['form-wrapper']}>
       <div className={styles['headline-wrapper']}>
         <h1 className={styles.headline}>Get started.</h1>
         <h2 className={styles.subheading}>Create your DevConnector account.</h2>
       </div>
-      <form className={styles.form} onSubmit={handleSubmit(handleOnSubmit)}>
+      <form
+        className={styles.form}
+        onSubmit={handleSubmit(handleOnSubmit)}
+        noValidate
+      >
         <fieldset className={styles.fieldset}>
           <div className={styles['label-wrapper']}>
             <label className={styles.label} htmlFor="name">
@@ -137,17 +142,23 @@ const Register: React.FC = () => {
             />
           </span>
           <span className={styles['input-error']}>
-            {errors.password?.message}
+            {errors.confirmPassword?.message}
           </span>
         </fieldset>
         <button
           type="submit"
-          disabled={!isValid}
           aria-label="Create your account."
           className={styles.submit}
         >
           Create account
         </button>
+        <p className={styles['account-paragraph']}>
+          Already have an account?{' '}
+          <Link className={styles['account-paragraph-link']} to="/auth/login">
+            Click here
+          </Link>{' '}
+          to login.
+        </p>
       </form>
     </div>
   );

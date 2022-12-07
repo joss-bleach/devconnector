@@ -18,6 +18,7 @@ module.exports = {
         headline: '#094067',
         paragraph: '#5f6c7b',
         button: '#3da9fc',
+        input: '#e8eaf3',
         'button-hover': '#3698E2',
         'button-text': '#fffffe',
         tertiary: '#ef4565',
