@@ -7,6 +7,7 @@ import AuthPage from './pages/auth/Auth.page';
 // Components
 import Register from './components/auth/Register';
 import Auth from './components/auth/Auth';
+import Dashboard from './pages/auth/Dashboard';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="login" element={<Auth />} />
           <Route path="signup" element={<Register />} />
         </Route>
+        <Route path="dashboard" element={<Dashboard />} />
       </Routes>
     </>
   );

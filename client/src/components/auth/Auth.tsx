@@ -1,9 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AuthenticationFormData } from './Auth.types';
 import { authenticationValidationSchema } from './Auth.validation';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+
+// Redux
+import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
+import { RegisterUser } from '../../state/features/auth/models';
+import {
+  authenticateUser,
+  resetAsyncState,
+} from '../../state/features/auth/authSlice';
 
 // Styles
 import styles from './Auth.styles';
@@ -11,6 +20,25 @@ import { Link } from 'react-router-dom';
 import SEO from '../seo/SEO';
 
 const Auth: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const { isLoading, isSuccess, isAuthenticated } = useAppSelector(
+    (state) => state.auth,
+  );
+
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(resetAsyncState());
+      reset();
+    }
+  }, [isSuccess, dispatch]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    navigate('/dashboard');
+  }, [isAuthenticated]);
+
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const {
     register,
@@ -22,8 +50,7 @@ const Auth: React.FC = () => {
   });
 
   const handleOnSubmit = (data: AuthenticationFormData) => {
-    console.log(JSON.stringify(data, null, 2));
-    reset();
+    dispatch(authenticateUser(data));
   };
 
   const handleToggleVisible = () => {

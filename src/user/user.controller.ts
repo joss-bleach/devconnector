@@ -10,6 +10,6 @@ export class UserController {
   @UseGuards(JwtGuard)
   @Get('me')
   async me(@GetCurrentUser() user: any) {
-    return await this.userService.findUserByEmail(user.email);
+    return await this.userService.findUserById(user.id);
   }
 }

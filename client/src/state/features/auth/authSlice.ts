@@ -2,12 +2,12 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AsyncState } from '../../async-state.interface';
 import authService from './auth.service';
 
-import { DisplayUser, RegisterUser, Jwt, AuthUser } from './models';
+import { RegisterUser, Jwt, AuthUser, JwtDecodedUser } from './models';
 
 // Get data from local storage
 
 const userFromLocalStorage: string | null = localStorage.getItem('user');
-const user: DisplayUser | null = !!userFromLocalStorage
+const user: JwtDecodedUser | null = !!userFromLocalStorage
   ? JSON.parse(userFromLocalStorage)
   : null;
 
@@ -15,7 +15,7 @@ const jwtFromLocalStorage: string | null = localStorage.getItem('jwt');
 const jwt = !!jwtFromLocalStorage ? JSON.parse(jwtFromLocalStorage) : null;
 
 interface AuthState extends AsyncState {
-  user?: DisplayUser | null;
+  user?: JwtDecodedUser | null;
   jwt?: Jwt;
   isAuthenticated?: boolean;
 }
@@ -36,7 +36,17 @@ export const registerUser = createAsyncThunk(
       return await authService.createNewUser(user);
     } catch (err) {
       return thunkAPI.rejectWithValue('Unable to register user.');
-      console.log(err);
+    }
+  },
+);
+
+export const authenticateUser = createAsyncThunk(
+  '/auth/authenticate',
+  async (user: AuthUser, thunkAPI) => {
+    try {
+      return await authService.authenticateUser(user);
+    } catch (err) {
+      return thunkAPI.rejectWithValue('Invalid email/password combination.');
     }
   },
 );
@@ -63,6 +73,23 @@ export const authSlice = createSlice({
       .addCase(registerUser.rejected, (state) => {
         state.isLoading = false;
         state.isError = true;
+        state.user = null;
+      })
+      .addCase(authenticateUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(authenticateUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.isAuthenticated = true;
+        state.jwt = action.payload.jwt;
+        state.user = action.payload.user;
+      })
+      .addCase(authenticateUser.rejected, (state) => {
+        state.isLoading = false;
+        state.isSuccess = false;
+        state.isError = true;
+        state.isAuthenticated = false;
         state.user = null;
       });
   },

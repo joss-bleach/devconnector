@@ -28,6 +28,7 @@ export class UserService {
   // Find a user by their email address
   findUserByEmail = async (email: string): Promise<UserDocument> => {
     let user = await this.userModel.findOne({ email }).exec();
+    delete user.password;
     return user;
   };
 
