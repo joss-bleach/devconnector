@@ -8,7 +8,6 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 // Redux
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
-import { RegisterUser } from '../../state/features/auth/models';
 import {
   authenticateUser,
   resetAsyncState,
@@ -50,7 +49,7 @@ const Auth: React.FC = () => {
   });
 
   const handleOnSubmit = (data: AuthenticationFormData) => {
-    dispatch(authenticateUser(data));
+    const user = dispatch(authenticateUser(data));
   };
 
   const handleToggleVisible = () => {
@@ -132,7 +131,7 @@ const Auth: React.FC = () => {
             aria-label="Create your account."
             className={styles.submit}
           >
-            Create account
+            Log in
           </button>
           <p className={styles['account-paragraph']}>
             Don't have an account?{' '}

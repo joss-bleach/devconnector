@@ -23,7 +23,7 @@ interface AuthState extends AsyncState {
 const initialState: AuthState = {
   user: user,
   jwt: jwt,
-  isAuthenticated: false,
+  isAuthenticated: jwt ? true : false,
   isLoading: false,
   isSuccess: false,
   isError: false,

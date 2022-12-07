@@ -8,6 +8,8 @@ import AuthPage from './pages/auth/Auth.page';
 import Register from './components/auth/Register';
 import Auth from './components/auth/Auth';
 import Dashboard from './pages/auth/Dashboard';
+import PrivateRoute from './components/routing/PrivateRoute';
+import PublicRoute from './components/routing/PublicRoute';
 
 function App() {
   return (
@@ -25,11 +27,25 @@ function App() {
         theme="light"
       />
       <Routes>
-        <Route path="auth" element={<AuthPage />}>
+        <Route
+          path="auth"
+          element={
+            <PublicRoute>
+              <AuthPage />
+            </PublicRoute>
+          }
+        >
           <Route path="login" element={<Auth />} />
           <Route path="signup" element={<Register />} />
         </Route>
-        <Route path="dashboard" element={<Dashboard />} />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </>
   );

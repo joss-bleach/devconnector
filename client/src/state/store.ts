@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 
 import authReducer from './features/auth/authSlice';
 import userReducer from './features/user/userSlice';
+import profileReducer from './features/profile/profileSlice';
 
 import setAuthorisationToken from './setAuthorisationToken';
 
@@ -9,6 +10,7 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
     user: userReducer,
+    profile: profileReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -21,12 +23,7 @@ store.subscribe(() => {
   let previousState = currentState;
   currentState = store.getState();
   if (previousState.auth.jwt !== currentState.auth.jwt) {
-    if (currentState.auth.jwt === undefined && currentState.auth.jwt === null) {
-      return;
-    }
-    if (currentState.auth.jwt?.token) {
-      setAuthorisationToken(currentState.auth.jwt?.token);
-    }
+    setAuthorisationToken(currentState.auth.jwt?.token as string);
     return;
   }
 });
