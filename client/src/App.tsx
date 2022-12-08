@@ -10,6 +10,7 @@ import Auth from './components/auth/Auth';
 import Dashboard from './pages/auth/Dashboard';
 import PrivateRoute from './components/routing/PrivateRoute';
 import PublicRoute from './components/routing/PublicRoute';
+import DashProfile from './pages/Dash-Profile';
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route path="dash-profile" element={<DashProfile />} />
       </Routes>
     </>
   );
