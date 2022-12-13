@@ -7,6 +7,22 @@ import ProgressBar from '../components/create-profile/ProgressBar';
 const DashProfile = () => {
   const [formStep, setFormStep] = useState<number>(0);
   const [progressAmount, setProgressAmount] = useState<number>(20);
+  const [skill, setSkill] = useState<string>('');
+  const [skillArray, setSkillArray] = useState<string[]>([]);
+
+  const handleAddSkill = (e: any) => {
+    e.preventDefault();
+    setSkillArray((newSkillArray) => [...newSkillArray, skill]);
+    setSkill('');
+  };
+
+  const handleDeleteSkill = (skill: string) => {
+    let newSkillArray = skillArray;
+    let deletedSkillArray = newSkillArray.filter(
+      (name) => !name.includes(skill),
+    );
+    setSkillArray(deletedSkillArray);
+  };
 
   const handleNextFormStep = () => {
     if (formStep >= 4) {
@@ -191,7 +207,7 @@ const DashProfile = () => {
                   <div className="flex flex-row items-center justify-between">
                     <label
                       className="text-theme-headline text-xs font-semibold"
-                      htmlFor="skills"
+                      htmlFor="skill"
                     >
                       Enter up to 5 skills
                     </label>
@@ -202,16 +218,38 @@ const DashProfile = () => {
                   <div className="space-between flex w-full flex-row">
                     <input
                       type="text"
-                      id="skills"
+                      id="skill"
+                      name="skill"
+                      value={skill}
+                      onChange={(e) => setSkill(e.target.value)}
                       className="bg-theme-input text-theme-paragraph ring-theme-button h-9 w-full rounded p-2 text-sm focus:outline-none focus:ring-2"
                     />
-                    <button className="bg-theme-button text-theme-button-text hover:bg-theme-button-hover ml-4 flex h-9 items-center justify-center rounded px-4 transition">
-                      <FaPlus />
-                    </button>
+                    {skillArray.length < 5 && (
+                      <button
+                        className="bg-theme-button text-theme-button-text hover:bg-theme-button-hover ml-4 flex h-9 items-center justify-center rounded px-4 transition"
+                        onClick={handleAddSkill}
+                        aria-label="Add skill"
+                      >
+                        <FaPlus />
+                      </button>
+                    )}
                   </div>
-                  <span className="text-theme-tertiary text-xs font-semibold">
-                     
-                  </span>
+                  <p className="flex w-80 flex-wrap pt-6">
+                    {skillArray.map((skill, index) => (
+                      <span
+                        key={index}
+                        className="bg-theme-background text-theme-paragraph mr-2 mb-3 flex flex flex-row items-center space-x-2 rounded px-2 text-sm font-semibold"
+                      >
+                        {skill}
+                        <FaPlus
+                          role="button"
+                          aria-label={`Delete skill - ${skill}`}
+                          className="ml-1 rotate-45 cursor-pointer text-xs"
+                          onClick={() => handleDeleteSkill(skill)}
+                        />
+                      </span>
+                    ))}
+                  </p>
                 </fieldset>
               </section>
             )}
